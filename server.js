@@ -18,8 +18,15 @@ function serveFile(filePath, contentType, res) {
 // Create the server
 const server = http.createServer((req, res) => {
     let filePath = './public' + req.url;
+    
+    // If no specific route, default to home page
     if (filePath === './public/') {
-        filePath = './public/index.html';
+        filePath = './public/home.html';
+    }
+    
+    // Check if no extension, add .html
+    if (!path.extname(filePath)) {
+        filePath += '.html';
     }
 
     const extname = String(path.extname(filePath)).toLowerCase();
@@ -30,11 +37,12 @@ const server = http.createServer((req, res) => {
 
     const contentType = mimeTypes[extname] || 'text/html';
 
+    // Check if the file exists, else serve 404
     fs.exists(filePath, (exists) => {
         if (exists) {
             serveFile(filePath, contentType, res);
         } else {
-            serveFile('./public/404.html', 'text/html', res);
+            serveFile('./public/404.html', 'text/html', res);  // Serve 404 page
         }
     });
 });
